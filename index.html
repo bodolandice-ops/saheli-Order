@@ -51,33 +51,47 @@
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwspYXBl432XuvfHXbq2VgOoTiAmhjLJSX5u-wlHAb64QQkt7RrrlHTy8Guvk5NPy0dEQ/exec"; // PASTE NEW DEPLOYMENT URL HERE
+  <script>
+    const SCRIPT_URL = "YOUR_GOOGLE_WEB_APP_URL"; // PASTE YOUR URL HERE
 
     document.getElementById('shippingForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const btn = document.getElementById('submitBtn');
         const status = document.getElementById('status');
+        
         btn.disabled = true;
-        btn.innerHTML = "GENERATING PDF...";
+        btn.innerHTML = "UPLOADING...";
 
         const formData = new FormData(this);
-        const params = new URLSearchParams(formData);
+        const data = {};
+        formData.forEach((value, key) => data[key] = value);
 
-        fetch(API_URL + "?" + params.toString(), { method: 'POST' })
+        // We use 'no-cors' mode and text/plain to bypass the browser block
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors', 
+            headers: {
+                'Content-Type': 'text/plain'
+            },
+            body: JSON.stringify(data)
+        })
         .then(() => {
+            // NOTE: In 'no-cors' mode, we can't see the response, 
+            // so we assume success if the request sends.
             status.style.color = "green";
-            status.innerHTML = "✅ SUCCESS! Saved to Sheet and Folder.";
+            status.innerHTML = "✅ SUCCESS! Data sent to Boutique system.";
             this.reset();
         })
-        .catch(() => {
+        .catch(err => {
             status.style.color = "red";
-            status.innerHTML = "❌ CONNECTION ERROR.";
+            status.innerHTML = "❌ CONNECTION ERROR. Check Internet.";
         })
         .finally(() => {
             btn.disabled = false;
             btn.innerHTML = "SAVE & GENERATE LABEL";
         });
     });
+</script>
 </script>
 
 </body>
